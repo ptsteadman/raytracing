@@ -29,11 +29,11 @@
     <shader ref="bunny" />
     <data>../../meshes/bunnyNV.obj</data>
   </surface>
- <!-- <surface type="Box">
+  <surface type="Box">
   	<minpt>-3 -2 -3</minpt>
   	<maxpt>3 -0.9 3</maxpt>
   	<shader ref="ground" />
-  </surface>-->
+  </surface>
   
   <light type="PointLight">
   	<position>3 10 5</position>

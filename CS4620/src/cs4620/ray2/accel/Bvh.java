@@ -1,8 +1,11 @@
 
 package cs4620.ray2.accel;
 
+import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
+import java.util.Map;
 
 import cs4620.ray2.IntersectionRecord;
 import cs4620.ray2.Ray;
@@ -65,12 +68,10 @@ public class Bvh implements AccelStruct {
 		}
 		if(node.isLeaf()){
 			IntersectionRecord tmp = new IntersectionRecord();
-			tmp.t = Double.POSITIVE_INFINITY;
 			Ray ray = new Ray(rayIn.origin, rayIn.direction);
 			ray.start = rayIn.start;
 			ray.end = rayIn.end;
 			for(int i = node.surfaceIndexStart; i < node.surfaceIndexEnd; i++){
-				// doesn't the outRecord get overwritten if it intersects more than one surface? 
 				if(surfaces[i].intersect(tmp, ray) && tmp.t < ray.end ) {
 					if(anyIntersection) return true;
 					ret = true;
@@ -152,28 +153,42 @@ public class Bvh implements AccelStruct {
 		// ==== Step 3 ====
 		// Figure out the widest dimension (x or y or z).
 		// If x is the widest, set widestDim = 0. If y, set widestDim = 1. If z, set widestDim = 2.
-		int widestDim = 0;
+		Comparator<Surface> xComparator =  new Comparator<Surface>() {
+			public int compare(Surface s1, Surface s2) {
+				return s1.getAveragePosition().get(0).compareTo(s2.getAveragePosition().get(0));
+		}};
+		
+		Comparator<Surface> yComparator =  new Comparator<Surface>() {
+			public int compare(Surface s1, Surface s2) {
+				return s1.getAveragePosition().get(1).compareTo(s2.getAveragePosition().get(1));
+		}};
+		
+		Comparator<Surface> zComparator =  new Comparator<Surface>() {
+			public int compare(Surface s1, Surface s2) {
+				return s1.getAveragePosition().get(2).compareTo(s2.getAveragePosition().get(2));
+		}};
+		
+		Comparator<Surface> comparator = null;
 		if(maxB.x - minB.x > maxB.y - maxB.y){
-			widestDim = maxB.x - minB.x > maxB.z - minB.z ? 0 : 2;
+			if (maxB.x - minB.x > maxB.z - minB.z) {
+				comparator = xComparator;
+			} else {
+				comparator = zComparator;
+			}
 		} else {
-			widestDim = maxB.y - minB.y > maxB.z - minB.z ? 1 : 2;
+			if (maxB.y - minB.y > maxB.z - minB.z) {
+				comparator = yComparator;
+			} else {
+				comparator = zComparator;
+			}		
 		}
 
 		// ==== Step 4 ====
 		// Sort surfaces according to the widest dimension.
 		
-		// bubble sort ftw
-		for(int i = start; i < end; i++){
-			for(int j = i; j < end - 1; j++){
-				if(surfaces[i].getAveragePosition().get(widestDim) > 
-				   surfaces[j + 1].getAveragePosition().get(widestDim)){
-					Surface tmp = surfaces[j + 1];
-					surfaces[j + 1] = surfaces[i];
-					surfaces[i] = tmp;
-				}
-			}
-		}
-		
+
+			
+		Arrays.sort(surfaces, start, end, comparator);
 
 
 		// ==== Step 5 ====

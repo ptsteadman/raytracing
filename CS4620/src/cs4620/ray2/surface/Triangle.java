@@ -103,7 +103,7 @@ public class Triangle extends Surface {
 			outRecord.t = t;
 			ray.evaluate(outRecord.location, t);
 	        //TODO#A7 Part 2 MY ADDITION
-	        Vector3d locWorld = new Vector3d(outRecord.location);
+	        Vector3d locWorld = new Vector3d(outRecord.location.clone());
 	        Vector3d normal = new Vector3d();
 
 	        this.tMat.mulPos(locWorld);
@@ -147,21 +147,8 @@ public class Triangle extends Surface {
 	public void computeBoundingBox() {
 		// TODO#A7: Compute the bounding box and store the result in
 		// averagePosition, minBound, and maxBound.
-		
-		// patrick's simple bounding box
-		Vector3d tv0 = this.tMat.mulPos(owner.getPosition(index.x));
-		Vector3d tv1 = this.tMat.mulPos(owner.getPosition(index.y));
-		Vector3d tv2 = this.tMat.mulPos(owner.getPosition(index.z));
-		
-		Vector3d minPt = new Vector3d(Math.min(tv2.x,Math.min(tv0.x,tv1.x)),Math.min(tv2.y,Math.min(tv0.y,tv1.y)),Math.min(tv2.z,Math.min(tv0.z,tv1.z)));
-		Vector3d maxPt = new Vector3d(Math.max(tv2.x,Math.max(tv0.x,tv1.x)),Math.max(tv2.y,Math.max(tv0.y,tv1.y)),Math.max(tv2.z,Math.max(tv0.z,tv1.z)));
-		
-		this.minBound = new Vector3d(minPt);
-		this.maxBound = new Vector3d(maxPt);
-		this.averagePosition= new Vector3d(tv0.clone().add(tv1.clone().add(tv2.clone())).div(3.0));
 
 		
-		/*
 		Vector3d tv0 = owner.getPosition(index.x);
 		Vector3d tv1 = owner.getPosition(index.y);
 		Vector3d tv2 = owner.getPosition(index.z);
@@ -216,7 +203,7 @@ public class Triangle extends Surface {
 
 		//}
 		 
-		 */
+		 
 	}
 
 	/**
