@@ -83,7 +83,7 @@ public class Cubemap {
 				y = 3.5*blockSz + dirScale.z;
 			}else{
 				x = 1.5*blockSz + dirScale.x;
-				y = 1.5*blockSz + dirScale.z;	
+				y = 1.5*blockSz + dirScale.z;
 			}
 		} else if (zabs >= xabs && zabs >= yabs){
 			scale = 1.0/(2.0*zabs);
