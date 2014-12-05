@@ -57,21 +57,42 @@ public class Bvh implements AccelStruct {
 		// TODO#A7: fill in this function.
 		// Hint: For a leaf node, use a normal linear search. Otherwise, search in the left and right children.
 		// Another hint: save time by checking if the ray intersects the node first before checking the childrens.
-		if(node == null) return false;
+		//if(node == null) return false;
+		outRecord.t = Double.POSITIVE_INFINITY;
 		boolean ret = false;
-		if(!node.intersects(rayIn)) return false;
+		if(!node.intersects(rayIn)){
+			return false;
+		}
 		if(node.isLeaf()){
+			IntersectionRecord tmp = new IntersectionRecord();
+			tmp.t = Double.POSITIVE_INFINITY;
+			Ray ray = new Ray(rayIn.origin, rayIn.direction);
+			ray.start = rayIn.start;
+			ray.end = rayIn.end;
 			for(int i = node.surfaceIndexStart; i < node.surfaceIndexEnd; i++){
 				// doesn't the outRecord get overwritten if it intersects more than one surface? 
-				if(this.surfaces[i].intersect(outRecord, rayIn)){
+				if(surfaces[i].intersect(tmp, ray) && tmp.t < ray.end ) {
 					if(anyIntersection) return true;
 					ret = true;
+					ray.end = tmp.t;
+					if(outRecord != null){
+						outRecord.set(tmp);
+					}
 				}
 			}
 		} else {
+			
 			// recurse on left and right subtrees, return true is either has an intersection
-			return intersectHelper(node.child[0], outRecord, rayIn, anyIntersection) || 
-				   intersectHelper(node.child[1], outRecord, rayIn, anyIntersection);
+			 boolean successLeft =  intersectHelper(node.child[0], outRecord, rayIn, anyIntersection);
+			 IntersectionRecord tmp = new IntersectionRecord();
+			 tmp.set(outRecord);
+			 boolean successRight = intersectHelper(node.child[1], outRecord, rayIn, anyIntersection);
+		
+			 if(tmp.t < outRecord.t){
+				 outRecord.set(tmp);
+			 } 
+			
+			 return (successLeft || successRight);
 		}
 		return ret;
 	}
@@ -81,6 +102,15 @@ public class Bvh implements AccelStruct {
 	public void build(Surface[] surfaces) {
 		this.surfaces = surfaces;
 		root = createTree(0, surfaces.length);
+		/*
+		// check that I sorted right 
+		System.out.println("start sorted region");
+		for(int i = 0; i < surfaces.length; i++){
+			Surface s = this.surfaces[i];
+			System.out.println(s.getAveragePosition());
+		}
+		System.out.println("end sorted region");
+		*/
 	}
 	
 	/**
@@ -105,14 +135,12 @@ public class Bvh implements AccelStruct {
 		
 		for(int i = start; i < end; i++){
 			Surface s = this.surfaces[i];
-			System.out.println(s.toString());
-			System.out.println(s.getMinBound());
 			if(s.getMinBound().x < minB.x) minB.set(0, s.getMinBound().x);
 			if(s.getMinBound().y < minB.y) minB.set(1, s.getMinBound().y);
 			if(s.getMinBound().z < minB.z) minB.set(2, s.getMinBound().z);
-			if(s.getMaxBound().x < maxB.x) maxB.set(0, s.getMaxBound().x);
-			if(s.getMaxBound().y < maxB.y) maxB.set(1, s.getMaxBound().y);
-			if(s.getMaxBound().z < maxB.z) maxB.set(2, s.getMaxBound().z);
+			if(s.getMaxBound().x > maxB.x) maxB.set(0, s.getMaxBound().x);
+			if(s.getMaxBound().y > maxB.y) maxB.set(1, s.getMaxBound().y);
+			if(s.getMaxBound().z > maxB.z) maxB.set(2, s.getMaxBound().z);
 		}
 		
 		// ==== Step 2 ====
@@ -146,13 +174,7 @@ public class Bvh implements AccelStruct {
 			}
 		}
 		
-		// check that I sorted right 
-		System.out.println("start sorted region");
-		for(int i = start; i < end; i++){
-			Surface s = this.surfaces[i];
-			System.out.println(s.getAveragePosition().get(widestDim));
-		}
-		System.out.println("end sorted region");
+
 
 		// ==== Step 5 ====
 		// Recursively create left and right children.

@@ -2,6 +2,8 @@
 <!--  Overlapping geometry.
  -->
 <scene>
+ <AccelStruct type="NaiveAccelStruct"
+/>
   <exposure>70</exposure>
   <camera type="ParallelCamera">
     <viewPoint>30 30 30</viewPoint>

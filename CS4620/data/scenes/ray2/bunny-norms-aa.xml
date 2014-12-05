@@ -2,9 +2,9 @@
 <!--  Stanford Bunny mesh (500 triangles, with normals)
  -->
 <scene>
-<AccelStruct type="NaiveAccelStruct"
-/>
-  <samples>16</samples>
+<!--<AccelStruct type="NaiveAccelStruct"
+/>-->
+  <samples>1</samples>
   <exposure>6.54321</exposure>
   <camera type="PerspectiveCamera">
     <viewPoint>4 6 8</viewPoint>
@@ -29,11 +29,11 @@
     <shader ref="bunny" />
     <data>../../meshes/bunnyNV.obj</data>
   </surface>
-  <surface type="Box">
+ <!-- <surface type="Box">
   	<minpt>-3 -2 -3</minpt>
   	<maxpt>3 -0.9 3</maxpt>
   	<shader ref="ground" />
-  </surface>
+  </surface>-->
   
   <light type="PointLight">
   	<position>3 10 5</position>
