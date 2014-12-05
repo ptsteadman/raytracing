@@ -65,10 +65,9 @@ public class Cubemap {
 		double scale = 0.0;
 		
 		if (xabs >= yabs && xabs >= zabs){
-			
-			scale = 1/dir.x;
-			Vector3d dirScale = dir.clone().mul(scale);
-			if (dir.x >= 0){
+			scale = 1.0/(2.0*xabs);
+			Vector3d dirScale = new Vector3d(dir.clone().mul(scale));
+			if (dir.x >= 0.0){
 				x = 2.5*blockSz + dirScale.z;
 				y = 2.5*blockSz + dirScale.y;
 			}else{
@@ -76,10 +75,10 @@ public class Cubemap {
 				y = 2.5*blockSz + dirScale.y;
 			}
 		} else if (yabs>= xabs && yabs>= zabs){
-			scale = 1/dir.y;
+			scale = 1.0/(2.0*yabs);
 			Vector3d dirScale = dir.clone().mul(scale);
 			
-			if (dir.y >= 0){
+			if (dir.y >= 0.0){
 				x = 1.5*blockSz + dirScale.x;
 				y = 3.5*blockSz + dirScale.z;
 			}else{
@@ -87,10 +86,10 @@ public class Cubemap {
 				y = 1.5*blockSz + dirScale.z;	
 			}
 		} else if (zabs >= xabs && zabs >= yabs){
-			scale = 1/dir.z;
+			scale = 1.0/(2.0*zabs);
 			Vector3d dirScale = dir.clone().mul(scale);
 			
-			if (dir.z >= 0){
+			if (dir.z >= 0.0){
 				x = 1.5*blockSz + dirScale.x;
 				y = 0.5*blockSz + dirScale.y;
 			}else{
@@ -98,9 +97,11 @@ public class Cubemap {
 				y = 2.5*blockSz + dirScale.y;
 			}
 		}
+		//System.out.println("X:" + x);
+		//System.out.println("Y:" + y);
 		
-		int roundX = (int) Math.floor(x);
-		int roundY = (int) Math.floor(y);
+		int roundX = (int) Math.rint(x);
+		int roundY = (int) Math.rint(y);
 		float r = imageData[3*(roundX+width*roundY)];
 		float g = imageData[3*(roundX+width*roundY) +1];
 		float b = imageData[3*(roundX+width*roundY) +2];
