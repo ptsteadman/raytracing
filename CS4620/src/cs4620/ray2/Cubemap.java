@@ -63,42 +63,44 @@ public class Cubemap {
 		double x = 0.0;
 		double y= 0.0;
 		double scale = 0.0;
-		System.out.println("X-VALUE: " + dir.x + "Y-VALUE: " + dir.y + "Z-VALUE: " + dir.z);
+		//System.out.println("Width:" + width + " Height:" + height + " Scalefactor: " + scaleFactor);
+		//System.out.println("X-VALUE: " + dir.x + "Y-VALUE: " + dir.y + "Z-VALUE: " + dir.z);
 		if (xabs >= yabs && xabs >= zabs){
-			scale = 1.0/(2.0*xabs);
+			//scale = 1.0/(2.0*xabs);
+			scale = 1.0;
 			Vector3d dirScale = new Vector3d(dir.clone().mul(scale));
-			System.out.println("XX is biggest");
+			//System.out.println("XX is biggest");
 			if (dir.x >= 0.0){
-				x = 2.5*blockSz + dirScale.z;
-				y = 2.5*blockSz + dirScale.y;
+				x = 2.5*blockSz + dirScale.z*blockSz;
+				y = 2.5*blockSz + dirScale.y*blockSz;
 			}else{
-				x = 0.5*blockSz + dirScale.z;
-				y = 2.5*blockSz + dirScale.y;
+				x = 0.5*blockSz + dirScale.z*blockSz;
+				y = 2.5*blockSz + dirScale.y*blockSz;
 			}
 		} else if (yabs>= xabs && yabs>= zabs){
-			System.out.println("YY is biggest");
+			//System.out.println("YY is biggest");
 			scale = 1.0/(2.0*yabs);
 			Vector3d dirScale = new Vector3d(dir.clone().mul(scale));
 			
 			if (dir.y >= 0.0){
-				x = 1.5*blockSz + dirScale.x;
-				y = 3.5*blockSz + dirScale.z;
+				x = 1.5*blockSz + dirScale.x*blockSz;
+				y = 3.5*blockSz + dirScale.z*blockSz;
 			}else{
-				x = 1.5*blockSz + dirScale.x;
-				y = 1.5*blockSz + dirScale.z;
+				x = 1.5*blockSz + dirScale.x*blockSz;
+				y = 1.5*blockSz + dirScale.z*blockSz;
 			}
 		} else if (zabs >= xabs && zabs >= yabs){
-			System.out.println("ZZ is biggest");
+			//System.out.println("ZZ is biggest");
 
 			scale = 1.0/(2.0*zabs);
 			Vector3d dirScale = new Vector3d(dir.clone().mul(scale));
 			
 			if (dir.z >= 0.0){
-				x = 1.5*blockSz + dirScale.x;
-				y = 0.5*blockSz + dirScale.y;
+				x = 1.5*blockSz + dirScale.x*blockSz;
+				y = 0.5*blockSz + dirScale.y*blockSz;
 			}else{
-				x = 1.5*blockSz + dirScale.x;
-				y = 2.5*blockSz + dirScale.y;
+				x = 1.5*blockSz + dirScale.x*blockSz;
+				y = 2.5*blockSz + dirScale.y*blockSz;
 			}
 		}
 
@@ -106,14 +108,20 @@ public class Cubemap {
 		int roundX = (int) Math.rint(x);
 		int roundY = (int) Math.rint(y);
 		
-		System.out.println("X:" + roundX);
-		System.out.println("Y:" + roundY);
+		roundX = (roundX<0) ? 0 : roundX;
+		roundX = (roundX >1023) ? 1023 : roundX;
+		
+		roundY = (roundY<0) ? 0 : roundY;
+		roundY = (roundY >1023) ? 1023 : roundY;
+		
+		//System.out.println("X:" + roundX);
+		//System.out.println("Y:" + roundY);
 		
 		float r = imageData[3*(roundX+width*roundY)];
 		float g = imageData[3*(roundX+width*roundY) +1];
 		float b = imageData[3*(roundX+width*roundY) +2];
 		Vector3d foundColor = new Vector3d(r,g,b);
-		System.out.println("COLORFOUND:" + foundColor);
+		//System.out.println("COLORFOUND:" + foundColor);
 		outRadiance.set(foundColor);
 		outRadiance.mul(scaleFactor);
 	}
