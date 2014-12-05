@@ -60,7 +60,6 @@ public class Bvh implements AccelStruct {
 		// TODO#A7: fill in this function.
 		// Hint: For a leaf node, use a normal linear search. Otherwise, search in the left and right children.
 		// Another hint: save time by checking if the ray intersects the node first before checking the childrens.
-		if(node == null) return false;
 		boolean ret = false;
 		if(!node.intersects(rayIn)){
 			return false;
@@ -75,9 +74,8 @@ public class Bvh implements AccelStruct {
 					if(anyIntersection) return true;
 					ret = true;
 					ray.end = tmp.t;
-					if(outRecord != null){
 						outRecord.set(tmp);
-					}
+					
 				}
 			}
 		} else {
@@ -155,7 +153,7 @@ public class Bvh implements AccelStruct {
 		// Check for the base case. 
 		// If the range [start, end) is small enough (e.g. less than or equal to 10), just return a new leaf node.
 		
-		if(Math.abs(end - start) <= 10) return new BvhNode(minB, maxB, null, null, start, end);
+		if(Math.abs(end - start) <= 11) return new BvhNode(minB, maxB, null, null, start, end);
 
 		// ==== Step 3 ====
 		// Figure out the widest dimension (x or y or z).
@@ -201,9 +199,7 @@ public class Bvh implements AccelStruct {
 
 		// ==== Step 5 ====
 		// Recursively create left and right children.
-		int halfway = (end-start)/2;
-		System.out.println(halfway);
-		
+		int halfway = (end-start)/2;		
 		return new BvhNode(minB, maxB, createTree(start, start + halfway), 
 				           createTree(start + halfway, end), start, end);
 	}

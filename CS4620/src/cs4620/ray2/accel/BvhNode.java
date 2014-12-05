@@ -100,14 +100,12 @@ public class BvhNode {
 		double tEnterY = Math.min(tMinY, tMaxY);
 		double tExitY = Math.max(tMinY, tMaxY);
 		double tEnterZ = Math.min(tMinZ, tMaxZ);
-		double tExitZ = Math.max(tMinY, tMaxZ);
+		double tExitZ = Math.max(tMinZ, tMaxZ);
 		
 		// determine the overall entry and exit t
 		double tEnter = Math.max(Math.max(tEnterX, tEnterY), tEnterZ);
 		double tExit = Math.min(Math.min(tExitX, tExitY), tExitZ);
 		if (tEnter < tExit) return true;
-		//System.out.println("tEnter " + tEnter);
-		//System.out.println("tExit " + tExit);
 		return false;
 		
 	}
