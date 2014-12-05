@@ -98,7 +98,7 @@ public class BvhNode {
 		double tEnterY = Math.min(tMinY, tMaxY);
 		double tExitY = Math.max(tMinY, tMaxY);
 		double tEnterZ = Math.min(tMinZ, tMaxZ);
-		double tExitZ = Math.max(tMinY, tMaxZ);
+		double tExitZ = Math.max(tMinZ, tMaxZ);
 		
 		// determine the overall entry and exit t
 		double tEnter = Math.max(Math.max(tEnterX, tEnterY), tEnterZ);

@@ -61,7 +61,7 @@ public class CookTorrance extends Shader {
 			//From intersectino point to light
 			Ray placeholder = new Ray();
 			if (!this.isShadowed(scene, curLight, record, placeholder)){
-				Vector3d l = new Vector3d(curLight.getDirection(record.location).negate());
+				Vector3d l = new Vector3d(curLight.getDirection(record.location));  // don't need to negate this 
 				l.normalize();
 				Vector3d v = ray.direction.negate().normalize();
 				Vector3d h = l.clone().add(v).div(l.clone().add(v).len());
@@ -78,11 +78,12 @@ public class CookTorrance extends Shader {
 				double geo = Math.min(1,Math.min(g1,g2));
 				
 				double specCoeff = (fres*micro*geo)/(Math.PI*n.dot(v)*n.dot(l));
-				double lightCoeff = Math.max(0.0,n.dot(l)) / (curLight.getRSq(record.location));
-				
-				Vector3d term1 = new Vector3d(this.specularColor.clone().mul(specCoeff).add(this.diffuseColor.clone()));
-				Vector3d ctColor = new Vector3d(term1.clone().mul(curLight.intensity.clone().mul(lightCoeff)));
-				outIntensity.set(ctColor);
+				Vector3d intensity = curLight.intensity.clone().mul((Math.max(0.0,n.dot(l))) / (curLight.getRSq(record.location)));
+
+				Vector3d specularColor = this.specularColor.clone().mul(specCoeff).mul(intensity);
+				Vector3d diffuseColor = this.diffuseColor.clone().mul(intensity);
+				outIntensity.add(specularColor);
+				outIntensity.add(diffuseColor);
 			} 
 		}
 
