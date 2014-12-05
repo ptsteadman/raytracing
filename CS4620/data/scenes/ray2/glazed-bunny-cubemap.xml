@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--  A blue box sitting on a floor.
  -->
- 
+
 <scene>
   <samples>16</samples>
   <camera type="PerspectiveCamera">

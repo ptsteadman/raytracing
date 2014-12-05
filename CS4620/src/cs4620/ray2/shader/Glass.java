@@ -46,7 +46,7 @@ public class Glass extends Shader {
 		// TODO#A7: fill in this function.
 		depth++;
 		Vector3d outgoing = new Vector3d().set(ray.direction).negate();
-		Vector3d effectiveNormal = new Vector3d();
+		Vector3d n = new Vector3d();
 		
 		double theta1; 
 		double theta2;
@@ -57,49 +57,38 @@ public class Glass extends Shader {
 			theta2 = Math.asin(Math.sin(theta1)/refractiveIndex);
 			n2 = refractiveIndex;
 			n1 = 1.0;
-			effectiveNormal.set(record.normal);
+			n.set(record.normal);
 		} else {
 			theta1 = Math.acos(outgoing.dot(record.normal.clone().negate()));
 			theta2 = Math.asin(Math.sin(theta1)/refractiveIndex);
 			n2 = 1.0;
 			n1 = refractiveIndex;
-			effectiveNormal.set(record.normal.clone().negate());
+			n.set(record.normal.clone().negate());
 		}
+		Vector3d d = ray.direction;
+		double r = this.fresnel(n, outgoing, this.refractiveIndex);
 		
-		double criticalAngle = Math.asin(n1/n2);
-		if((n1/n2) < 1 && theta1 > criticalAngle){
-			// total internal reflection
-			Colord reflectedColor = new Colord();
-			Ray reflection = new Ray();
-			reflection.origin.set(record.location);
-			reflection.direction.set(effectiveNormal.clone());
-			reflection.direction.mul(2*(effectiveNormal.dot(outgoing))).sub(outgoing);
-			reflection.makeOffsetRay();
-			RayTracer.shadeRay(reflectedColor, scene, reflection, depth);
-			outIntensity.add(reflectedColor);
-			
-		} else {
-			double r = this.fresnel(effectiveNormal, outgoing, this.refractiveIndex);
-			Colord reflectedColor = new Colord();
-			Ray reflection = new Ray();
-			reflection.origin.set(record.location);
-			reflection.direction.set(effectiveNormal.clone());
-			reflection.direction.mul(2*(effectiveNormal.dot(outgoing))).sub(outgoing);
-			reflection.makeOffsetRay();
-			RayTracer.shadeRay(reflectedColor, scene, reflection, depth);
-			
+		Colord reflectedColor = new Colord();
+		Ray reflection = new Ray();
+		reflection.origin.set(record.location);
+		reflection.direction.set(n.clone());
+		reflection.direction.mul(2*(n.dot(outgoing))).sub(outgoing);
+		reflection.makeOffsetRay();
+		RayTracer.shadeRay(reflectedColor, scene, reflection, depth);
+		outIntensity.add(reflectedColor.clone().mul(r));
+		double discriminant = 1 - (Math.pow(n1, 2)*(1-Math.pow(d.dot(n),2)))/Math.pow(n2, 2);
+		if(discriminant > 0){
 			Colord refractedColor = new Colord();
 			Ray refraction = new Ray();
 			refraction.origin.set(record.location);
-			refraction.direction.set(ray.direction.clone().mul(n1/n2).add(effectiveNormal.clone().mul((n1/n2)*outgoing.dot(effectiveNormal)-Math.sqrt(1-Math.pow(Math.sin(theta2), 2)))));
-			//refraction.direction.set(ray.direction);
+			refraction.direction.set(d);
+			refraction.direction.sub(n.clone().mul(d.dot(n)));
+			refraction.direction.mul(n1/n2);
+			refraction.direction.sub(n.mul(Math.sqrt(discriminant)));
 			refraction.makeOffsetRay();
 			RayTracer.shadeRay(refractedColor, scene, refraction, depth);
 			
-			
-			outIntensity.add(refractedColor.clone()).mul(1 - r).add(reflectedColor.clone().mul(r));
-			
-		
+			outIntensity.add(refractedColor.clone().mul(1 - r));
 		}
 		
 	}

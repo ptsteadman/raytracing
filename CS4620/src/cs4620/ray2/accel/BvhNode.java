@@ -83,7 +83,6 @@ public class BvhNode {
 	 * @return true if ray intersects the bounding box
 	 */
 	public boolean intersects(Ray ray) {
-		// TODO#A7: fill in this function.
 		// Check whether the given ray intersects the AABB of this BvhNode
 		// find the t where the ray intersects with the bounding slab
 		double tMinX = (minBound.x - ray.origin.x)/ray.direction.x;
@@ -94,13 +93,12 @@ public class BvhNode {
 		double tMaxZ = (maxBound.z - ray.origin.z)/ray.direction.z;
 		
 		// determine the entry and exit t for each slab
-		
 		double tEnterX = Math.min(tMinX, tMaxX);
 		double tExitX = Math.max(tMinX, tMaxX);
 		double tEnterY = Math.min(tMinY, tMaxY);
 		double tExitY = Math.max(tMinY, tMaxY);
 		double tEnterZ = Math.min(tMinZ, tMaxZ);
-		double tExitZ = Math.max(tMinZ, tMaxZ);
+		double tExitZ = Math.max(tMinY, tMaxZ);
 		
 		// determine the overall entry and exit t
 		double tEnter = Math.max(Math.max(tEnterX, tEnterY), tEnterZ);

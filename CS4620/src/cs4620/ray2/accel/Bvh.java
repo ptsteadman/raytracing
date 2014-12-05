@@ -153,49 +153,31 @@ public class Bvh implements AccelStruct {
 		// Check for the base case. 
 		// If the range [start, end) is small enough (e.g. less than or equal to 10), just return a new leaf node.
 		
-		if(Math.abs(end - start) <= 11) return new BvhNode(minB, maxB, null, null, start, end);
+		if(Math.abs(end - start) <= 10) return new BvhNode(minB, maxB, null, null, start, end);
 
 		// ==== Step 3 ====
 		// Figure out the widest dimension (x or y or z).
 		// If x is the widest, set widestDim = 0. If y, set widestDim = 1. If z, set widestDim = 2.
-		Comparator<Surface> xComparator =  new Comparator<Surface>() {
-			public int compare(Surface s1, Surface s2) {
-				return s1.getAveragePosition().get(0).compareTo(s2.getAveragePosition().get(0));
-		}};
-		
-		Comparator<Surface> yComparator =  new Comparator<Surface>() {
-			public int compare(Surface s1, Surface s2) {
-				return s1.getAveragePosition().get(1).compareTo(s2.getAveragePosition().get(1));
-		}};
-		
-		Comparator<Surface> zComparator =  new Comparator<Surface>() {
-			public int compare(Surface s1, Surface s2) {
-				return s1.getAveragePosition().get(2).compareTo(s2.getAveragePosition().get(2));
-		}};
-		
-		Comparator<Surface> comparator = null;
+			
+		MyComparator comparator = new MyComparator();
 		if(maxB.x - minB.x > maxB.y - maxB.y){
 			if (maxB.x - minB.x > maxB.z - minB.z) {
-				comparator = xComparator;
+				comparator.setIndex(0);
 			} else {
-				comparator = zComparator;
+				comparator.setIndex(2);
 			}
 		} else {
 			if (maxB.y - minB.y > maxB.z - minB.z) {
-				comparator = yComparator;
-				System.out.println("y");
+				comparator.setIndex(1);
 			} else {
-				comparator = zComparator;
+				comparator.setIndex(2);
 			}		
 		}
 
 		// ==== Step 4 ====
 		// Sort surfaces according to the widest dimension.
-		
-
 			
 		Arrays.sort(surfaces, start, end, comparator);
-
 
 		// ==== Step 5 ====
 		// Recursively create left and right children.
