@@ -3,8 +3,7 @@
  -->
  
 <scene>
-<AccelStruct type="NaiveAccelStruct"
-/>
+
   <samples>8</samples>
   <exposure>70</exposure>
   <camera type="ParallelCamera">

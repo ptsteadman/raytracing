@@ -105,8 +105,9 @@ public class BvhNode {
 		// determine the overall entry and exit t
 		double tEnter = Math.max(Math.max(tEnterX, tEnterY), tEnterZ);
 		double tExit = Math.min(Math.min(tExitX, tExitY), tExitZ);
-
 		if (tEnter < tExit) return true;
+		//System.out.println("tEnter " + tEnter);
+		//System.out.println("tExit " + tExit);
 		return false;
 		
 	}

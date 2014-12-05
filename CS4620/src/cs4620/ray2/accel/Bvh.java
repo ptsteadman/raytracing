@@ -60,8 +60,7 @@ public class Bvh implements AccelStruct {
 		// TODO#A7: fill in this function.
 		// Hint: For a leaf node, use a normal linear search. Otherwise, search in the left and right children.
 		// Another hint: save time by checking if the ray intersects the node first before checking the childrens.
-		//if(node == null) return false;
-		outRecord.t = Double.POSITIVE_INFINITY;
+		if(node == null) return false;
 		boolean ret = false;
 		if(!node.intersects(rayIn)){
 			return false;
@@ -83,16 +82,23 @@ public class Bvh implements AccelStruct {
 			}
 		} else {
 			
-			// recurse on left and right subtrees, return true is either has an intersection
-			 boolean successLeft =  intersectHelper(node.child[0], outRecord, rayIn, anyIntersection);
-			 IntersectionRecord tmp = new IntersectionRecord();
-			 tmp.set(outRecord);
-			 boolean successRight = intersectHelper(node.child[1], outRecord, rayIn, anyIntersection);
-		
-			 if(tmp.t < outRecord.t){
-				 outRecord.set(tmp);
-			 } 
-			
+			// recurse on left and right subtrees, return true if either has an intersection
+			 IntersectionRecord leftRecord = new IntersectionRecord();
+			 boolean successLeft =  intersectHelper(node.child[0], leftRecord, rayIn, anyIntersection);
+			 IntersectionRecord rightRecord = new IntersectionRecord();
+			 boolean successRight = intersectHelper(node.child[1], rightRecord, rayIn, anyIntersection);
+			 
+			 if(successLeft && successRight){
+				 if(leftRecord.t < rightRecord.t){
+					 outRecord.set(leftRecord);
+				 } else {
+					 outRecord.set(rightRecord);
+				 } 
+			 } else if(successLeft){
+				 outRecord.set(leftRecord);
+			 } else if(successRight){
+				 outRecord.set(rightRecord);
+			 }
 			 return (successLeft || successRight);
 		}
 		return ret;
@@ -136,19 +142,20 @@ public class Bvh implements AccelStruct {
 		
 		for(int i = start; i < end; i++){
 			Surface s = this.surfaces[i];
-			if(s.getMinBound().x < minB.x) minB.set(0, s.getMinBound().x);
-			if(s.getMinBound().y < minB.y) minB.set(1, s.getMinBound().y);
-			if(s.getMinBound().z < minB.z) minB.set(2, s.getMinBound().z);
-			if(s.getMaxBound().x > maxB.x) maxB.set(0, s.getMaxBound().x);
-			if(s.getMaxBound().y > maxB.y) maxB.set(1, s.getMaxBound().y);
-			if(s.getMaxBound().z > maxB.z) maxB.set(2, s.getMaxBound().z);
+			if(s.getMinBound().x < minB.x) minB.x = s.getMinBound().x;
+			if(s.getMinBound().y < minB.y) minB.y = s.getMinBound().y;
+			if(s.getMinBound().z < minB.z) minB.z = s.getMinBound().z;
+			if(s.getMaxBound().x > maxB.x) maxB.x = s.getMaxBound().x;
+			if(s.getMaxBound().y > maxB.y) maxB.y = s.getMaxBound().y;
+			if(s.getMaxBound().z > maxB.z) maxB.z = s.getMaxBound().z;
 		}
+
 		
 		// ==== Step 2 ====
 		// Check for the base case. 
 		// If the range [start, end) is small enough (e.g. less than or equal to 10), just return a new leaf node.
 		
-		if(end - start <= 10) return new BvhNode(minB, maxB, null, null, start, end);
+		if(Math.abs(end - start) <= 10) return new BvhNode(minB, maxB, null, null, start, end);
 
 		// ==== Step 3 ====
 		// Figure out the widest dimension (x or y or z).
@@ -178,6 +185,7 @@ public class Bvh implements AccelStruct {
 		} else {
 			if (maxB.y - minB.y > maxB.z - minB.z) {
 				comparator = yComparator;
+				System.out.println("y");
 			} else {
 				comparator = zComparator;
 			}		
@@ -193,9 +201,11 @@ public class Bvh implements AccelStruct {
 
 		// ==== Step 5 ====
 		// Recursively create left and right children.
+		int halfway = (end-start)/2;
+		System.out.println(halfway);
 		
-		return new BvhNode(minB, maxB, createTree(start, start + ((end-start)/2)), 
-				           createTree(start + ((end-start)/2), end), start, end);
+		return new BvhNode(minB, maxB, createTree(start, start + halfway), 
+				           createTree(start + halfway, end), start, end);
 	}
 
 }

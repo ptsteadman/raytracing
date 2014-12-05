@@ -2,8 +2,6 @@
 <!--  Stanford Bunny mesh (500 triangles, with normals)
  -->
 <scene>
-<!--<AccelStruct type="NaiveAccelStruct"
-/>-->
   <samples>1</samples>
   <exposure>6.54321</exposure>
   <camera type="PerspectiveCamera">

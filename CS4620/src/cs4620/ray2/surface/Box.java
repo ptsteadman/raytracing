@@ -103,9 +103,9 @@ public class Box extends Surface {
 		this.tMat.mulPos(v7);
 		this.tMat.mulPos(v8);
 		Vector3d[] varray = {v1,v2,v3,v4,v5,v6,v7,v8};
-		double minx = Double.MAX_VALUE, miny = Double.MAX_VALUE, minz =Double.MAX_VALUE;
-		double maxx = Double.MAX_VALUE, maxy = Double.MAX_VALUE, maxz = Double.MAX_VALUE;
-		
+		double minx = v1.x, miny = v1.y, minz = v1.z;
+		double maxx = v1.x, maxy = v1.y, maxz = v1.z;
+	
 		for (Vector3d v : varray){
 			minx = (v.x < minx) ? v.x : minx;
 			miny = (v.y < miny) ? v.y : miny;
@@ -114,15 +114,12 @@ public class Box extends Surface {
 			maxy = (v.y > maxy) ? v.y : maxy;
 			maxz = (v.z > maxz) ? v.z : maxz;
 		}
-		this.minBound = new Vector3d();
-		this.maxBound = new Vector3d();
-		this.averagePosition = new Vector3d();
 		
 		this.minBound = new Vector3d(minx,miny,minz);
 		this.maxBound = new Vector3d(maxx,maxy,maxz);
 		
 		
-		Vector3d avg = new Vector3d(minPt.clone().add(maxPt.clone()).div(2.0));
+		Vector3d avg = new Vector3d(minBound.clone().add(maxBound.clone()).div(2.0));
 		this.averagePosition = new Vector3d().set(this.tMat.mulPos(avg));
 		/*
 		Vector3d sphereDiam = maxPt.sub(minPt);

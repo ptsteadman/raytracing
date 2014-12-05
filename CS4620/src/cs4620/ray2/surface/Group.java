@@ -37,17 +37,16 @@ public class Group extends Surface {
 	  this.tMat = new Matrix4d();
 	  this.tMatInv = new Matrix4d();
 	  this.tMatTInv = new Matrix4d();
-	  this.tMat.set(pMat).mulBefore(transformMat);
+	  this.tMat.set(pMat).mulBefore(transformMat.clone());
 	  this.tMatInv.set(this.tMat).invert();
-	  this.tMatTInv.set(this.tMatInv).transpose();
-    
+	  this.tMatTInv.set(this.tMat).invert().transpose();
+	  //computeBoundingBox();
+
     // TODO#A7: Call setTransformation(tMat, tMatInv, tMatTInv) on each of the children.
-	  //LOOK HERE IS SOMETHING BREAKS, MAY NEED TO PROPOGATE DOWN TO REST OF THE OBJECTS RECURSIVELY
 	  for (Surface s : objs){
 		  s.setTransformation(this.tMat, this.tMatInv, this.tMatTInv);
 	  }
 	
-	  computeBoundingBox();
   }
   
   

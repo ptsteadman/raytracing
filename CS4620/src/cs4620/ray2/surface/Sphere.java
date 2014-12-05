@@ -118,8 +118,8 @@ public class Sphere extends Surface {
 		// TODO#A7: Compute the bounding box and store the result in
 		// averagePosition, minBound, and maxBound.
 		
-		Vector3d minPt = new Vector3d(center.x - radius, center.y - radius, center.z - radius);
-		Vector3d maxPt = new Vector3d(center.x + radius, center.y + radius, center.z + radius);
+		Vector3d minPt = new Vector3d(center.clone().x - radius, center.clone().y - radius, center.clone().z - radius);
+		Vector3d maxPt = new Vector3d(center.clone().x + radius, center.clone().y + radius, center.clone().z + radius);
 		
 		Vector3d v1 = new Vector3d(minPt);
 		Vector3d v2 = new Vector3d(minPt.x,maxPt.y,minPt.z);
@@ -140,8 +140,8 @@ public class Sphere extends Surface {
 		this.tMat.mulPos(v7);
 		this.tMat.mulPos(v8);
 		Vector3d[] varray = {v1,v2,v3,v4,v5,v6,v7,v8};
-		double minx = Double.MAX_VALUE, miny = Double.MAX_VALUE, minz =Double.MAX_VALUE;
-		double maxx = Double.MAX_VALUE, maxy = Double.MAX_VALUE, maxz = Double.MAX_VALUE;
+		double minx = v1.x, miny = v1.y, minz = v1.z;
+		double maxx = v1.x, maxy = v1.y, maxz = v1.z;
 		
 		for (Vector3d v : varray){
 			minx = (v.x < minx) ? v.x : minx;
@@ -151,9 +151,6 @@ public class Sphere extends Surface {
 			maxy = (v.y > maxy) ? v.y : maxy;
 			maxz = (v.z > maxz) ? v.z : maxz;
 		}
-		this.minBound = new Vector3d();
-		this.maxBound = new Vector3d();
-		this.averagePosition = new Vector3d();
 		
 		this.minBound = new Vector3d(minx,miny,minz);
 		this.maxBound = new Vector3d(maxx,maxy,maxz);
