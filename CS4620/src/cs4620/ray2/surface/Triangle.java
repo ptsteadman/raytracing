@@ -187,7 +187,9 @@ public class Triangle extends Surface {
 			maxy = (v.y > maxy) ? v.y : maxy;
 			maxz = (v.z > maxz) ? v.z : maxz;
 		}
-		
+		this.minBound = new Vector3d();
+		this.maxBound = new Vector3d();
+		this.averagePosition = new Vector3d();
 
 		this.minBound = new Vector3d(minx,miny,minz);
 		this.maxBound = new Vector3d(maxx,maxy,maxz);

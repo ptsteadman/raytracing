@@ -2,6 +2,7 @@ package cs4620.ray2.surface;
 
 import cs4620.ray2.IntersectionRecord;
 import cs4620.ray2.Ray;
+import egl.math.Matrix4d;
 import egl.math.Vector3d;
 
 public class Cylinder extends Surface {
@@ -201,10 +202,14 @@ public class Cylinder extends Surface {
 			maxy = (v.y > maxy) ? v.y : maxy;
 			maxz = (v.z > maxz) ? v.z : maxz;
 		}
+		this.minBound = new Vector3d();
+		this.maxBound = new Vector3d();
+		this.averagePosition = new Vector3d();
 		
-		this.minBound = new Vector3d(minx,miny,minz);
-		this.maxBound = new Vector3d(maxx,maxy,maxz);
+		this.minBound.set(minx,miny,minz);
+		this.maxBound.set(maxx,maxy,maxz);		
 		
+		this.averagePosition.set(this.tMat.mulPos(center));
 		
 		/*
 		Vector3d sphereDiam = maxPt.sub(minPt);
