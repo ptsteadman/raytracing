@@ -57,8 +57,22 @@ public class Bvh implements AccelStruct {
 		// TODO#A7: fill in this function.
 		// Hint: For a leaf node, use a normal linear search. Otherwise, search in the left and right children.
 		// Another hint: save time by checking if the ray intersects the node first before checking the childrens.
+		if(node == null) return false;
 		boolean ret = false;
-
+		if(!node.intersects(rayIn)) return false;
+		if(node.isLeaf()){
+			for(int i = node.surfaceIndexStart; i < node.surfaceIndexEnd; i++){
+				// doesn't the outRecord get overwritten if it intersects more than one surface? 
+				if(this.surfaces[i].intersect(outRecord, rayIn)){
+					if(anyIntersection) return true;
+					ret = true;
+				}
+			}
+		} else {
+			// recurse on left and right subtrees, return true is either has an intersection
+			return intersectHelper(node.child[0], outRecord, rayIn, anyIntersection) || 
+				   intersectHelper(node.child[1], outRecord, rayIn, anyIntersection);
+		}
 		return ret;
 	}
 
@@ -88,27 +102,63 @@ public class Bvh implements AccelStruct {
 		// Hint: To find the bounding box for each surface, use getMinBound() and getMaxBound() */
 		Vector3d minB = new Vector3d(Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY, Double.POSITIVE_INFINITY); 
 		Vector3d maxB = new Vector3d(Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NEGATIVE_INFINITY);
-
-
+		
+		for(int i = start; i < end; i++){
+			Surface s = this.surfaces[i];
+			System.out.println(s.toString());
+			System.out.println(s.getMinBound());
+			if(s.getMinBound().x < minB.x) minB.set(0, s.getMinBound().x);
+			if(s.getMinBound().y < minB.y) minB.set(1, s.getMinBound().y);
+			if(s.getMinBound().z < minB.z) minB.set(2, s.getMinBound().z);
+			if(s.getMaxBound().x < maxB.x) maxB.set(0, s.getMaxBound().x);
+			if(s.getMaxBound().y < maxB.y) maxB.set(1, s.getMaxBound().y);
+			if(s.getMaxBound().z < maxB.z) maxB.set(2, s.getMaxBound().z);
+		}
+		
 		// ==== Step 2 ====
 		// Check for the base case. 
 		// If the range [start, end) is small enough (e.g. less than or equal to 10), just return a new leaf node.
-
+		
+		if(end - start <= 10) return new BvhNode(minB, maxB, null, null, start, end);
 
 		// ==== Step 3 ====
 		// Figure out the widest dimension (x or y or z).
 		// If x is the widest, set widestDim = 0. If y, set widestDim = 1. If z, set widestDim = 2.
-
+		int widestDim = 0;
+		if(maxB.x - minB.x > maxB.y - maxB.y){
+			widestDim = maxB.x - minB.x > maxB.z - minB.z ? 0 : 2;
+		} else {
+			widestDim = maxB.y - minB.y > maxB.z - minB.z ? 1 : 2;
+		}
 
 		// ==== Step 4 ====
 		// Sort surfaces according to the widest dimension.
-
+		
+		// bubble sort ftw
+		for(int i = start; i < end; i++){
+			for(int j = i; j < end - 1; j++){
+				if(surfaces[i].getAveragePosition().get(widestDim) > 
+				   surfaces[j + 1].getAveragePosition().get(widestDim)){
+					Surface tmp = surfaces[j + 1];
+					surfaces[j + 1] = surfaces[i];
+					surfaces[i] = tmp;
+				}
+			}
+		}
+		
+		// check that I sorted right 
+		System.out.println("start sorted region");
+		for(int i = start; i < end; i++){
+			Surface s = this.surfaces[i];
+			System.out.println(s.getAveragePosition().get(widestDim));
+		}
+		System.out.println("end sorted region");
 
 		// ==== Step 5 ====
 		// Recursively create left and right children.
-
 		
-		return new BvhNode(minB, maxB, new BvhNode(), new BvhNode(), start, end);
+		return new BvhNode(minB, maxB, createTree(start, start + ((end-start)/2)), 
+				           createTree(start + ((end-start)/2), end), start, end);
 	}
 
 }

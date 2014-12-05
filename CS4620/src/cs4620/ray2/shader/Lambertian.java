@@ -40,7 +40,6 @@ public class Lambertian extends Shader {
 	 */
 	@Override
 	public void shade(Colord outIntensity, Scene scene, Ray ray, IntersectionRecord record, int depth) {
-			
 		Vector3d incoming = new Vector3d();
 		Colord color = new Colord();
 		Ray shadowRay = new Ray();

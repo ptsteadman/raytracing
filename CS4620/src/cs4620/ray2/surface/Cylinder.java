@@ -46,7 +46,8 @@ public class Cylinder extends Surface {
 		  	//TODO#A7: Modify the intersect method: 
 		  	//1. transform the ray to object space (use untransformRay)
 		  	//2. transform the resulting intersection point and normal to world space		  
-		    Ray ray = rayIn;
+		    Ray ray = untransformRay(rayIn);
+		    
 
 		    // Rename the common vectors so I don't have to type so much
 		    Vector3d d = ray.direction;
@@ -127,15 +128,33 @@ public class Cylinder extends Surface {
 		      if (t <tside) {
 		        outRecord.t = tside;
 		        ray.evaluate(outRecord.location, tside);
-		        outRecord.normal.set(0, 0, 1);
+		        
+		        //TODO#A7 Part 2 MY ADDITION
+		        Vector3d locWorld = new Vector3d(outRecord.location);
+		        this.tMat.mulPos(locWorld);
+		        outRecord.location.set(locWorld);
+		        
+		        Vector3d norm = new Vector3d(0.0,0.0,1.0);
+		        this.tMatTInv.mulDir(norm);
+		        outRecord.normal.set(norm.normalize());
 		      }
 		      else {
 		        outRecord.t = t;
-		        ray.evaluate(outRecord.location, t);        
-		        outRecord.normal.set(outRecord.location.x, outRecord.location.y, 0).sub(c.x, c.y, 0);
-		      }
+		        ray.evaluate(outRecord.location, t);     
+		        
+		        //TODO#A7 Part 2 MY ADDITION
+		        Vector3d locWorld = new Vector3d(outRecord.location);
+		        Vector3d norm = new Vector3d(outRecord.location.clone().x - c.x, outRecord.location.clone().y - c.y,0.0);
 
-		      if (outRecord.normal.dot(ray.direction) > 0)
+		        this.tMat.mulPos(locWorld);
+		        outRecord.location.set(locWorld);
+		        
+		        this.tMatTInv.mulDir(norm);
+		        outRecord.normal.set(norm.normalize());
+		        //outRecord.normal.set(outRecord.location.x, outRecord.location.y, 0).sub(c.x, c.y, 0);
+		      }
+		      //MADE A CHANGE, RAY -> RAYIN
+		      if (outRecord.normal.dot(rayIn.direction) > 0)
 		        outRecord.normal.negate();
 
 		      outRecord.surface = this;
@@ -150,7 +169,53 @@ public class Cylinder extends Surface {
 		// averagePosition, minBound, and maxBound.
 		// Hint: The bounding box may be transformed by a transformation matrix.
 
-
+		Vector3d minPt = new Vector3d(center.x - radius, center.y - radius, center.z - height/2);
+		Vector3d maxPt = new Vector3d(center.x + radius, center.y + radius, center.z + height/2);
+		Vector3d v1 = new Vector3d(minPt);
+		Vector3d v2 = new Vector3d(minPt.x,maxPt.y,minPt.z);
+		Vector3d v3 = new Vector3d(minPt.x,minPt.y,maxPt.z);
+		Vector3d v4 = new Vector3d(minPt.x,maxPt.y,maxPt.z);
+		
+		Vector3d v5 = new Vector3d(maxPt.x,minPt.y,minPt.z);
+		Vector3d v6 = new Vector3d(maxPt.x,minPt.y,maxPt.z);
+		Vector3d v7 = new Vector3d(maxPt.x,maxPt.y,minPt.z);
+		Vector3d v8 = new Vector3d(maxPt);
+		
+		this.tMat.mulPos(v1);
+		this.tMat.mulPos(v2);
+		this.tMat.mulPos(v3);
+		this.tMat.mulPos(v4);
+		this.tMat.mulPos(v5);
+		this.tMat.mulPos(v6);
+		this.tMat.mulPos(v7);
+		this.tMat.mulPos(v8);
+		Vector3d[] varray = {v1,v2,v3,v4,v5,v6,v7,v8};
+		double minx = Double.MAX_VALUE, miny = Double.MAX_VALUE, minz =Double.MAX_VALUE;
+		double maxx = Double.MAX_VALUE, maxy = Double.MAX_VALUE, maxz = Double.MAX_VALUE;
+		
+		for (Vector3d v : varray){
+			minx = (v.x < minx) ? v.x : minx;
+			miny = (v.y < miny) ? v.y : miny;
+			minz = (v.z < minz) ? v.z : minz;
+			maxx = (v.x > maxx) ? v.x : maxx;
+			maxy = (v.y > maxy) ? v.y : maxy;
+			maxz = (v.z > maxz) ? v.z : maxz;
+		}
+		
+		this.minBound = new Vector3d(minx,miny,minz);
+		this.maxBound = new Vector3d(maxx,maxy,maxz);
+		
+		
+		/*
+		Vector3d sphereDiam = maxPt.sub(minPt);
+		double radius = sphereDiam.len()/2.0;
+		Vector3d a = new Vector3d(this.averagePosition);
+		double minx = a.x - radius, miny = a.y - radius, minz = a.z - radius;
+		double maxx = a.x + radius, maxy = a.y + radius, maxz = a.z + radius;
+		
+		this.minBound.set(minx,miny,minz);
+		this.maxBound.set(maxx,maxy,maxz);
+		*/
 	}
 
 	/**

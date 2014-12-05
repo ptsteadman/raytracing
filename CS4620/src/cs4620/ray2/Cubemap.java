@@ -57,7 +57,56 @@ public class Cubemap {
 	public void evaluate(Vector3d dir, Colord outRadiance) {
 		//TODO#A7 Look up for the radiance of the environment mapping in a given direction
 		//don't forget to multiply the outRadiance by scaleFactor
+		double xabs = Math.abs(dir.x);
+		double yabs = Math.abs(dir.y);
+		double zabs = Math.abs(dir.z);
+		double x = 0.0;
+		double y= 0.0;
+		double scale = 0.0;
 		
+		if (xabs >= yabs && xabs >= zabs){
+			
+			scale = 1/dir.x;
+			Vector3d dirScale = dir.clone().mul(scale);
+			if (dir.x >= 0){
+				x = 2.5*blockSz + dirScale.z;
+				y = 2.5*blockSz + dirScale.y;
+			}else{
+				x = 0.5*blockSz + dirScale.z;
+				y = 2.5*blockSz + dirScale.y;
+			}
+		} else if (yabs>= xabs && yabs>= zabs){
+			scale = 1/dir.y;
+			Vector3d dirScale = dir.clone().mul(scale);
+			
+			if (dir.y >= 0){
+				x = 1.5*blockSz + dirScale.x;
+				y = 3.5*blockSz + dirScale.z;
+			}else{
+				x = 1.5*blockSz + dirScale.x;
+				y = 1.5*blockSz + dirScale.z;	
+			}
+		} else if (zabs >= xabs && zabs >= yabs){
+			scale = 1/dir.z;
+			Vector3d dirScale = dir.clone().mul(scale);
+			
+			if (dir.z >= 0){
+				x = 1.5*blockSz + dirScale.x;
+				y = 0.5*blockSz + dirScale.y;
+			}else{
+				x = 1.5*blockSz + dirScale.x;
+				y = 2.5*blockSz + dirScale.y;
+			}
+		}
+		
+		int roundX = (int) Math.floor(x);
+		int roundY = (int) Math.floor(y);
+		float r = imageData[3*(roundX+width*roundY)];
+		float g = imageData[3*(roundX+width*roundY) +1];
+		float b = imageData[3*(roundX+width*roundY) +2];
+		Vector3d foundColor = new Vector3d(r,g,b);
+		outRadiance.set(foundColor);
+		outRadiance.mul(scaleFactor);
 	}
 	
 	public void generate(Vector2d seed, Vector3d outDirection) {

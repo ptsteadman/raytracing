@@ -73,8 +73,64 @@ public class Box extends Surface {
 		// Hint: The bounding box is not the same as just minPt and maxPt,
 		// because
 		// this object can be transformed by a transformation matrix.
-
-
+		
+		//worldCorner 1 and 2 
+		
+		/*
+		Vector3d wc1 = new Vector3d(minPt);
+		Vector3d wc2 = new Vector3d(maxPt);
+		this.tMat.mulPos(wc1);
+		this.tMat.mulPos(wc2);
+		
+		double minx = Math.min(world)
+		*/
+		Vector3d v1 = new Vector3d(minPt);
+		Vector3d v2 = new Vector3d(minPt.x,maxPt.y,minPt.z);
+		Vector3d v3 = new Vector3d(minPt.x,minPt.y,maxPt.z);
+		Vector3d v4 = new Vector3d(minPt.x,maxPt.y,maxPt.z);
+		
+		Vector3d v5 = new Vector3d(maxPt.x,minPt.y,minPt.z);
+		Vector3d v6 = new Vector3d(maxPt.x,minPt.y,maxPt.z);
+		Vector3d v7 = new Vector3d(maxPt.x,maxPt.y,minPt.z);
+		Vector3d v8 = new Vector3d(maxPt);
+		
+		this.tMat.mulPos(v1);
+		this.tMat.mulPos(v2);
+		this.tMat.mulPos(v3);
+		this.tMat.mulPos(v4);
+		this.tMat.mulPos(v5);
+		this.tMat.mulPos(v6);
+		this.tMat.mulPos(v7);
+		this.tMat.mulPos(v8);
+		Vector3d[] varray = {v1,v2,v3,v4,v5,v6,v7,v8};
+		double minx = Double.MAX_VALUE, miny = Double.MAX_VALUE, minz =Double.MAX_VALUE;
+		double maxx = Double.MAX_VALUE, maxy = Double.MAX_VALUE, maxz = Double.MAX_VALUE;
+		
+		for (Vector3d v : varray){
+			minx = (v.x < minx) ? v.x : minx;
+			miny = (v.y < miny) ? v.y : miny;
+			minz = (v.z < minz) ? v.z : minz;
+			maxx = (v.x > maxx) ? v.x : maxx;
+			maxy = (v.y > maxy) ? v.y : maxy;
+			maxz = (v.z > maxz) ? v.z : maxz;
+		}
+		
+		this.minBound = new Vector3d(minx,miny,minz);
+		this.maxBound = new Vector3d(maxx,maxy,maxz);
+		
+		
+		Vector3d avg = new Vector3d(minPt.clone().add(maxPt.clone()).div(2.0));
+		this.averagePosition = new Vector3d().set(this.tMat.mulPos(avg));
+		/*
+		Vector3d sphereDiam = maxPt.sub(minPt);
+		double radius = sphereDiam.len()/2.0;
+		Vector3d a = new Vector3d(this.averagePosition);
+		double minx = a.x - radius, miny = a.y - radius, minz = a.z - radius;
+		double maxx = a.x + radius, maxy = a.y + radius, maxz = a.z + radius;
+		
+		this.minBound.set(minx,miny,minz);
+		this.maxBound.set(maxx,maxy,maxz);
+		*/
 	}
 
 	public boolean intersect(IntersectionRecord outRecord, Ray ray) {

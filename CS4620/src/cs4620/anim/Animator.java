@@ -34,6 +34,7 @@ public class Animator {
 	}
 	
 	public void togglePlaying() {
+		System.out.println("toggled");
 		isPlaying = !isPlaying;
 	}
 

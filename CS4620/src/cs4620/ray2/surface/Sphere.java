@@ -47,7 +47,7 @@ public class Sphere extends Surface {
 	  	//transform the resulting intersection point and normal to world space
 
 		//transform the ray into object space
-		Ray ray = rayIn;
+		Ray ray = untransformRay(rayIn);
 		
 		// Rename the common vectors so I don't have to type so much
 		Vector3d d = ray.direction;
@@ -90,8 +90,19 @@ public class Sphere extends Surface {
 		if (outRecord != null) {
 			outRecord.t = t;
 			ray.evaluate(outRecord.location, t);
+	        //TODO#A7 Part 2 MY ADDITION
+	        Vector3d locWorld = new Vector3d(outRecord.location);
+	        Vector3d norm = new Vector3d(outRecord.location.clone().sub(center).normalize());
+
+	        this.tMat.mulPos(locWorld);
+	        outRecord.location.set(locWorld);
+	        
+	        this.tMatTInv.mulDir(norm);
+	        outRecord.normal.set(norm.normalize());
+	        
 			outRecord.surface = this;
-			outRecord.normal.set(outRecord.location).sub(center).normalize();
+			//outRecord.normal.set(outRecord.location).sub(center).normalize();
+			//NORMAL SHOULD BE CORRECT, NOT SURE IF THETA/PHI SHOULD BE COMPUTED IN OBJECT OR WORLD SPACE
 			double theta = Math.asin(outRecord.normal.y);
 			double phi = Math.atan2(outRecord.normal.x, outRecord.normal.z);
 			double u = (phi + Math.PI) / (2 * Math.PI);
@@ -106,8 +117,45 @@ public class Sphere extends Surface {
 	public void computeBoundingBox() {
 		// TODO#A7: Compute the bounding box and store the result in
 		// averagePosition, minBound, and maxBound.
-
-
+		
+		Vector3d minPt = new Vector3d(center.x - radius, center.y - radius, center.z - radius);
+		Vector3d maxPt = new Vector3d(center.x + radius, center.y + radius, center.z + radius);
+		
+		Vector3d v1 = new Vector3d(minPt);
+		Vector3d v2 = new Vector3d(minPt.x,maxPt.y,minPt.z);
+		Vector3d v3 = new Vector3d(minPt.x,minPt.y,maxPt.z);
+		Vector3d v4 = new Vector3d(minPt.x,maxPt.y,maxPt.z);
+		
+		Vector3d v5 = new Vector3d(maxPt.x,minPt.y,minPt.z);
+		Vector3d v6 = new Vector3d(maxPt.x,minPt.y,maxPt.z);
+		Vector3d v7 = new Vector3d(maxPt.x,maxPt.y,minPt.z);
+		Vector3d v8 = new Vector3d(maxPt);
+		
+		this.tMat.mulPos(v1);
+		this.tMat.mulPos(v2);
+		this.tMat.mulPos(v3);
+		this.tMat.mulPos(v4);
+		this.tMat.mulPos(v5);
+		this.tMat.mulPos(v6);
+		this.tMat.mulPos(v7);
+		this.tMat.mulPos(v8);
+		Vector3d[] varray = {v1,v2,v3,v4,v5,v6,v7,v8};
+		double minx = Double.MAX_VALUE, miny = Double.MAX_VALUE, minz =Double.MAX_VALUE;
+		double maxx = Double.MAX_VALUE, maxy = Double.MAX_VALUE, maxz = Double.MAX_VALUE;
+		
+		for (Vector3d v : varray){
+			minx = (v.x < minx) ? v.x : minx;
+			miny = (v.y < miny) ? v.y : miny;
+			minz = (v.z < minz) ? v.z : minz;
+			maxx = (v.x > maxx) ? v.x : maxx;
+			maxy = (v.y > maxy) ? v.y : maxy;
+			maxz = (v.z > maxz) ? v.z : maxz;
+		}
+		
+		this.minBound = new Vector3d(minx,miny,minz);
+		this.maxBound = new Vector3d(maxx,maxy,maxz);
+		
+		this.averagePosition = new Vector3d().set(this.tMat.mulPos(center));
 	}
 
 	/**

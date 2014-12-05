@@ -51,7 +51,26 @@ public class Glazed extends Shader {
 	@Override
 	public void shade(Colord outIntensity, Scene scene, Ray ray, IntersectionRecord record, int depth) {
 		// TODO#A7: fill in this function.
-		
+		depth++;
+		Colord reflectedColor = new Colord();
+		Colord substrateColor = new Colord();
 
+		Vector3d outgoing = new Vector3d().set(ray.direction).negate();
+		double r = this.fresnel(record.normal, outgoing, this.refractiveIndex);
+		
+		// calculate reflected color
+		Ray reflection = new Ray();
+		reflection.origin.set(record.location);
+		reflection.direction.set(record.normal.clone());
+		reflection.direction.mul(2*(record.normal.dot(outgoing))).sub(outgoing);
+		reflection.makeOffsetRay();
+		RayTracer.shadeRay(reflectedColor, scene, reflection, depth);
+		
+		// calculate substrate color
+		substrate.shade(substrateColor, scene, ray, record, depth);
+		
+		// scale reflected and substrate colors by R and (1 - R)
+		
+		outIntensity.add(substrateColor.clone()).mul(1 -r).add(reflectedColor.clone().mul(r));
 	}
 }

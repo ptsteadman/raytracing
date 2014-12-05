@@ -66,7 +66,7 @@ public class Triangle extends Surface {
 	  	//TODO#A7: Modify the intersect method: transform the ray to object space
 	  	//transform the resulting intersection point and normal to world space
 
-		Ray ray = rayIn;		
+		Ray ray = untransformRay(rayIn);		
 		
 		Vector3d v0 = owner.getPosition(index.x).clone();
 		
@@ -102,18 +102,32 @@ public class Triangle extends Surface {
 		if (outRecord != null) {
 			outRecord.t = t;
 			ray.evaluate(outRecord.location, t);
-			
+	        //TODO#A7 Part 2 MY ADDITION
+	        Vector3d locWorld = new Vector3d(outRecord.location);
+	        Vector3d normal = new Vector3d();
+
+	        this.tMat.mulPos(locWorld);
+	        outRecord.location.set(locWorld);
+	        
+	        //this.tMatTInv.mulDir(norm);
+	        //outRecord.normal.set(norm);
 			
 			outRecord.surface = this;
 
 			if (norm != null) {
-				outRecord.normal.set(norm);
+				normal.set(norm);
+		        this.tMatTInv.mulDir(normal);
+
+				outRecord.normal.set(normal.normalize());
 			} else {
 				outRecord.normal
 						.setZero()
 						.addMultiple(1 - beta - gamma, owner.getNormal(index.x))
 						.addMultiple(beta, owner.getNormal(index.y))
 						.addMultiple(gamma, owner.getNormal(index.z));
+				normal.set(outRecord.normal);
+		        this.tMatTInv.mulDir(normal);
+		        outRecord.normal.set(normal.normalize());
 			}
 			
 			
@@ -133,6 +147,58 @@ public class Triangle extends Surface {
 	public void computeBoundingBox() {
 		// TODO#A7: Compute the bounding box and store the result in
 		// averagePosition, minBound, and maxBound.
+
+		Vector3d tv0 = owner.getPosition(index.x);
+		Vector3d tv1 = owner.getPosition(index.y);
+		Vector3d tv2 = owner.getPosition(index.z);
+		
+		Vector3d minPt = new Vector3d(Math.min(tv2.x,Math.min(tv0.x,tv1.x)),Math.min(tv2.y,Math.min(tv0.y,tv1.y)),Math.min(tv2.z,Math.min(tv0.z,tv1.z)));
+		Vector3d maxPt = new Vector3d(Math.max(tv2.x,Math.max(tv0.x,tv1.x)),Math.max(tv2.y,Math.max(tv0.y,tv1.y)),Math.max(tv2.z,Math.max(tv0.z,tv1.z)));
+		
+		Vector3d v1 = new Vector3d(minPt);
+		Vector3d v2 = new Vector3d(minPt.x,maxPt.y,minPt.z);
+		Vector3d v3 = new Vector3d(minPt.x,minPt.y,maxPt.z);
+		Vector3d v4 = new Vector3d(minPt.x,maxPt.y,maxPt.z);
+		
+		Vector3d v5 = new Vector3d(maxPt.x,minPt.y,minPt.z);
+		Vector3d v6 = new Vector3d(maxPt.x,minPt.y,maxPt.z);
+		Vector3d v7 = new Vector3d(maxPt.x,maxPt.y,minPt.z);
+		
+		Vector3d v8 = new Vector3d(maxPt);
+		//if(this.tMat != null){
+		this.tMat.mulPos(v1);
+		this.tMat.mulPos(v2);
+		this.tMat.mulPos(v3);
+		this.tMat.mulPos(v4);
+		this.tMat.mulPos(v5);
+		this.tMat.mulPos(v6);
+		this.tMat.mulPos(v7);
+		this.tMat.mulPos(v8);
+		//}
+		Vector3d[] varray = {v1,v2,v3,v4,v5,v6,v7,v8};
+		double minx = Double.MAX_VALUE, miny = Double.MAX_VALUE, minz =Double.MAX_VALUE;
+		double maxx = Double.MAX_VALUE, maxy = Double.MAX_VALUE, maxz = Double.MAX_VALUE;
+		
+		for (Vector3d v : varray){
+			minx = (v.x < minx) ? v.x : minx;
+			miny = (v.y < miny) ? v.y : miny;
+			minz = (v.z < minz) ? v.z : minz;
+			maxx = (v.x > maxx) ? v.x : maxx;
+			maxy = (v.y > maxy) ? v.y : maxy;
+			maxz = (v.z > maxz) ? v.z : maxz;
+		}
+		
+
+		this.minBound = new Vector3d(minx,miny,minz);
+		this.maxBound = new Vector3d(maxx,maxy,maxz);
+		
+		Vector3d avg = new Vector3d(tv0.clone().add(tv1.clone().add(tv2.clone())).div(3.0));
+		//if(this.tMat != null){
+			this.averagePosition = new Vector3d().set(this.tMat.mulPos(avg));
+		//} else {
+		//	this.averagePosition = new Vector3d().set(avg);
+
+		//}
 	}
 
 	/**

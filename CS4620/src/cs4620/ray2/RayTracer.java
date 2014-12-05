@@ -15,6 +15,7 @@ import cs4620.ray2.shader.Shader;
 import cs4620.ray2.surface.Surface;
 import cs4620.ray2.viewer.QuickViewer;
 import egl.math.Colord;
+import egl.math.Vector3d;
 
 public class RayTracer {
 
@@ -339,18 +340,30 @@ public class RayTracer {
 
 		for(int x = offsetX; x < (offsetX + sizeX); x++) {
 			for(int y = offsetY; y < (offsetY + sizeY); y++) {
-
+				
 				pixelColor.setZero();
-
+				Vector3d sampleVec = new Vector3d();
+				Colord samplerayColor = new Colord();
 				// TODO#A7 Implement supersampling for antialiasing.
 				// Each pixel should have (samples*samples) subpixels.
+				for (int dx =0; dx < samples; dx++) {
+					for (int dy=0; dy< samples; dy++) {
+						double sampleY = (y + (dy + 0.5) / samples);
+						double sampleX = (x + (dx + 0.5) / samples);
+						Ray sampleRay = new Ray();
+						cam.getRay(sampleRay, sampleX/width, sampleY/height);
+						shadeRay(samplerayColor, scene, sampleRay, 1);
+						sampleVec.add(samplerayColor.r(), samplerayColor.g(), samplerayColor.b());
+
+					}
+				}
 				
-			
-				cam.getRay(ray,  (double) x / width, (double) y / height);
-				shadeRay(rayColor, scene, ray, 1);
+				sampleVec.mul(sInvSqr);
+				//cam.getRay(ray,  (double) x / width, (double) y / height);
+				//shadeRay(rayColor, scene, ray, 1);
+				rayColor.set(sampleVec);
 				pixelColor.add(rayColor);
-			
-					
+				
 				pixelColor.mul(exposure);
 
 				

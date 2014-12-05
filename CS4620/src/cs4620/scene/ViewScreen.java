@@ -142,7 +142,7 @@ public class ViewScreen extends GameScreen {
 					updateAnimation = true;
 				}
 				break;
-			case Keyboard.KEY_BACKSLASH:
+			case 0:
 				animator.togglePlaying();
 				break;
 			case Keyboard.KEY_APOSTROPHE:

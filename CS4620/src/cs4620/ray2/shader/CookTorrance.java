@@ -56,7 +56,33 @@ public class CookTorrance extends Shader {
 		//    the intersection point from the light's position.
 		// 4) Compute the color of the point using the CookTorrance shading model. Add this value
 		//    to the output.
-		
+		for (Light curLight : scene.getLights()){
+			
+			//From intersectino point to light
+			Ray placeholder = new Ray();
+			if (!this.isShadowed(scene, curLight, record, placeholder)){
+				Vector3d l = new Vector3d(curLight.getDirection(record.location).negate());
+				Vector3d v = ray.direction.negate();
+				Vector3d h = l.clone().add(v).div(l.clone().add(v).len());
+				Vector3d n = record.normal;
+				
+				double ndoth = record.normal.dot(h);
+				double fres = this.fresnel(record.normal, l, refractiveIndex);
+				
+				double microDenom = 1/(roughness*roughness*ndoth*ndoth*ndoth*ndoth);
+				double microNum = Math.exp(((ndoth*ndoth)-1)/(roughness*roughness*ndoth*ndoth));
+				double micro = microNum*microDenom;
+				double g1 = (2*ndoth*(n.dot(v)))/(v.dot(h));
+				double g2 =  (2*ndoth*(n.dot(l)))/(v.dot(h));
+				double geo = Math.min(1,Math.min(g1,g2));
+				
+				double specCoeff = (fres*micro*geo)/(Math.PI*n.dot(v)*n.dot(l));
+				double lightCoeff = Math.max(0.0,n.dot(l)) / (curLight.getRSq(record.location));
+				Vector3d term1 = new Vector3d(this.specularColor.clone().mul(specCoeff).add(this.diffuseColor.clone()));
+				Vector3d ctColor = new Vector3d(term1.clone().mul(curLight.intensity.clone().mul(lightCoeff)));
+				outIntensity.set(ctColor);
+			} 
+		}
 
 	}
 }
