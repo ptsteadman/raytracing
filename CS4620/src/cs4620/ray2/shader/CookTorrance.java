@@ -79,6 +79,7 @@ public class CookTorrance extends Shader {
 				
 				double specCoeff = (fres*micro*geo)/(Math.PI*n.dot(v)*n.dot(l));
 				double lightCoeff = Math.max(0.0,n.dot(l)) / (curLight.getRSq(record.location));
+				
 				Vector3d term1 = new Vector3d(this.specularColor.clone().mul(specCoeff).add(this.diffuseColor.clone()));
 				Vector3d ctColor = new Vector3d(term1.clone().mul(curLight.intensity.clone().mul(lightCoeff)));
 				outIntensity.set(ctColor);
