@@ -62,12 +62,13 @@ public class CookTorrance extends Shader {
 			Ray placeholder = new Ray();
 			if (!this.isShadowed(scene, curLight, record, placeholder)){
 				Vector3d l = new Vector3d(curLight.getDirection(record.location).negate());
-				Vector3d v = ray.direction.negate();
+				l.normalize();
+				Vector3d v = ray.direction.negate().normalize();
 				Vector3d h = l.clone().add(v).div(l.clone().add(v).len());
-				Vector3d n = record.normal;
+				Vector3d n = record.normal.normalize();
 				
-				double ndoth = record.normal.dot(h);
-				double fres = this.fresnel(record.normal, l, refractiveIndex);
+				double ndoth = n.dot(h);
+				double fres = this.fresnel(n, l, refractiveIndex);
 				
 				double microDenom = 1/(roughness*roughness*ndoth*ndoth*ndoth*ndoth);
 				double microNum = Math.exp(((ndoth*ndoth)-1)/(roughness*roughness*ndoth*ndoth));
