@@ -120,7 +120,7 @@ public class Box extends Surface {
 		
 		
 		Vector3d avg = new Vector3d(minBound.clone().add(maxBound.clone()).div(2.0));
-		this.averagePosition = new Vector3d().set(this.tMat.mulPos(avg));
+		this.averagePosition = new Vector3d().set(this.tMat.mulPos(avg.clone()));
 		/*
 		Vector3d sphereDiam = maxPt.sub(minPt);
 		double radius = sphereDiam.len()/2.0;

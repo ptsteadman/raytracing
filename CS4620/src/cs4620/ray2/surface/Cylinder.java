@@ -48,13 +48,15 @@ public class Cylinder extends Surface {
 		  	//1. transform the ray to object space (use untransformRay)
 		  	//2. transform the resulting intersection point and normal to world space		  
 		    Ray ray = untransformRay(rayIn);
-		    
+		    //System.out.println("center: " + center);
+		    //System.out.println("tMat: " + this.tMat);
+		    //System.out.println("tmatcenter:" + (this.tMat.mulPos(center.clone())));
 
 		    // Rename the common vectors so I don't have to type so much
 		    Vector3d d = ray.direction;
 		    Vector3d c = center;
 		    Vector3d o = ray.origin;
-
+		    
 		    double tMin = ray.start, tMax = ray.end;
 		    // Compute some factors used in computation
 		    double qx = o.x - c.x;
@@ -145,7 +147,7 @@ public class Cylinder extends Surface {
 		        
 		        //TODO#A7 Part 2 MY ADDITION
 		        Vector3d locWorld = new Vector3d(outRecord.location);
-		        Vector3d norm = new Vector3d(outRecord.location.clone().x - c.x, outRecord.location.clone().y - c.y,0.0);
+		        Vector3d norm = new Vector3d().set(outRecord.location.x, outRecord.location.y, 0).sub(c.x, c.y, 0);
 
 		        this.tMat.mulPos(locWorld);
 		        outRecord.location.set(locWorld);
@@ -209,8 +211,11 @@ public class Cylinder extends Surface {
 		this.minBound.set(minx,miny,minz);
 		this.maxBound.set(maxx,maxy,maxz);		
 		
-		this.averagePosition.set(this.tMat.mulPos(center));
-		
+		this.averagePosition.set(this.tMat.mulPos(center.clone()));
+		//System.out.println("center:" + center);
+		//System.out.println("avgpos: " + this.averagePosition);
+	    //System.out.println("tMat: " + this.tMat);
+
 		/*
 		Vector3d sphereDiam = maxPt.sub(minPt);
 		double radius = sphereDiam.len()/2.0;

@@ -74,6 +74,6 @@ public abstract class Shader {
 		double fs = (n1*Math.cos(theta1) - n2*Math.cos(theta2)) / (n1*Math.cos(theta1) + n2*Math.cos(theta2));
 
 		double R = (fp*fp + fs*fs)/2.0;
-		return Math.min(R, 1);
+		return Math.min(R, 1.0);
 	}
 }

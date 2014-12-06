@@ -66,8 +66,8 @@ public class Cubemap {
 		//System.out.println("Width:" + width + " Height:" + height + " Scalefactor: " + scaleFactor);
 		//System.out.println("X-VALUE: " + dir.x + "Y-VALUE: " + dir.y + "Z-VALUE: " + dir.z);
 		if (xabs >= yabs && xabs >= zabs){
-			//scale = 1.0/(2.0*xabs);
-			scale = 1.0;
+			scale = 1.0/(2.0*xabs);
+			//scale = 1.0;
 			Vector3d dirScale = new Vector3d(dir.clone().mul(scale));
 			//System.out.println("XX is biggest");
 			if (dir.x >= 0.0){
@@ -103,16 +103,15 @@ public class Cubemap {
 				y = 2.5*blockSz + dirScale.y*blockSz;
 			}
 		}
-
 		
 		int roundX = (int) Math.rint(x);
 		int roundY = (int) Math.rint(y);
 		
 		roundX = (roundX<0) ? 0 : roundX;
-		roundX = (roundX >1023) ? 1023 : roundX;
+		roundX = (roundX >width-1) ? width-1 : roundX;
 		
 		roundY = (roundY<0) ? 0 : roundY;
-		roundY = (roundY >1023) ? 1023 : roundY;
+		roundY = (roundY >height-1) ? height-1 : roundY;
 		
 		//System.out.println("X:" + roundX);
 		//System.out.println("Y:" + roundY);

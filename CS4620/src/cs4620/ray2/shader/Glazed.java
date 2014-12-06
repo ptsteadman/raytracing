@@ -72,7 +72,7 @@ public class Glazed extends Shader {
 		substrate.shade(substrateColor, scene, ray, test, depth);
 		
 		// scale reflected and substrate colors by R and (1 - R)
-		System.out.println(r);
+		//System.out.println(r);
 		
 		outIntensity.add(substrateColor.clone().mul(1 - r));
 		outIntensity.add(reflectedColor.clone().mul(r));

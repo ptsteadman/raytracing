@@ -67,6 +67,7 @@ public class Triangle extends Surface {
 	  	//transform the resulting intersection point and normal to world space
 
 		Ray ray = untransformRay(rayIn);		
+		//System.out.println("Ray Direction: " + ray.direction);
 		
 		Vector3d v0 = owner.getPosition(index.x).clone();
 		
@@ -103,7 +104,7 @@ public class Triangle extends Surface {
 			outRecord.t = t;
 			ray.evaluate(outRecord.location, t);
 	        //TODO#A7 Part 2 MY ADDITION
-	        Vector3d locWorld = new Vector3d(outRecord.location.clone());
+	        Vector3d locWorld = new Vector3d(outRecord.location);
 	        Vector3d normal = new Vector3d();
 
 	        this.tMat.mulPos(locWorld);
@@ -117,8 +118,8 @@ public class Triangle extends Surface {
 			if (norm != null) {
 				normal.set(norm);
 		        this.tMatTInv.mulDir(normal);
-
-				outRecord.normal.set(normal.normalize());
+		        //System.out.println("normal: " + normal);
+				outRecord.normal.set(normal);
 			} else {
 				outRecord.normal
 						.setZero()
@@ -127,7 +128,7 @@ public class Triangle extends Surface {
 						.addMultiple(gamma, owner.getNormal(index.z));
 				normal.set(outRecord.normal);
 		        this.tMatTInv.mulDir(normal);
-		        outRecord.normal.set(normal.normalize());
+		        outRecord.normal.set(normal);
 			}
 			
 			
@@ -194,7 +195,7 @@ public class Triangle extends Surface {
 		
 		Vector3d avg = new Vector3d(tv0.clone().add(tv1.clone().add(tv2.clone())).div(3.0));
 		//if(this.tMat != null){
-			this.averagePosition = new Vector3d().set(this.tMat.mulPos(avg));
+			this.averagePosition = new Vector3d().set(this.tMat.mulPos(avg.clone()));
 		//} else {
 		//	this.averagePosition = new Vector3d().set(avg);
 

@@ -48,7 +48,6 @@ public class Sphere extends Surface {
 
 		//transform the ray into object space
 		Ray ray = untransformRay(rayIn);
-		
 		// Rename the common vectors so I don't have to type so much
 		Vector3d d = ray.direction;
 		Vector3d c = center;
@@ -117,9 +116,9 @@ public class Sphere extends Surface {
 	public void computeBoundingBox() {
 		// TODO#A7: Compute the bounding box and store the result in
 		// averagePosition, minBound, and maxBound.
-		
-		Vector3d minPt = new Vector3d(center.clone().x - radius, center.clone().y - radius, center.clone().z - radius);
-		Vector3d maxPt = new Vector3d(center.clone().x + radius, center.clone().y + radius, center.clone().z + radius);
+
+		Vector3d minPt = new Vector3d(center.x - radius, center.y - radius, center.z - radius);
+		Vector3d maxPt = new Vector3d(center.x + radius, center.y + radius, center.z + radius);
 		
 		Vector3d v1 = new Vector3d(minPt);
 		Vector3d v2 = new Vector3d(minPt.x,maxPt.y,minPt.z);
@@ -155,7 +154,7 @@ public class Sphere extends Surface {
 		this.minBound = new Vector3d(minx,miny,minz);
 		this.maxBound = new Vector3d(maxx,maxy,maxz);
 		
-		this.averagePosition = new Vector3d().set(this.tMat.mulPos(center));
+		this.averagePosition = new Vector3d().set(this.tMat.mulPos(center.clone()));
 	}
 
 	/**
