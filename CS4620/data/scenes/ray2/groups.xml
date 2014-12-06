@@ -2,8 +2,6 @@
 <!--  A series of transformed cubes.
  -->
 <scene>
- <AccelStruct type="NaiveAccelStruct"
-/>
   <exposure>300</exposure>
   <camera type="PerspectiveCamera">
     <viewPoint>70 7 70</viewPoint>

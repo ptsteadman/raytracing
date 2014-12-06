@@ -63,27 +63,41 @@ public class CookTorrance extends Shader {
 			if (!this.isShadowed(scene, curLight, record, placeholder)){
 				Vector3d l = new Vector3d(curLight.getDirection(record.location));  // don't need to negate this 
 				l.normalize();
-				Vector3d v = ray.direction.negate().normalize();
-				Vector3d h = l.clone().add(v).div(l.clone().add(v).len());
-				Vector3d n = record.normal.normalize();
+				Vector3d v = new Vector3d(ray.direction.clone().negate().normalize());
+				Vector3d h = new Vector3d(l.clone().add(v).div((l.clone().add(v)).len()));
+				h.normalize();
+				Vector3d n = new Vector3d(record.normal.clone().normalize());
 				
 				double ndoth = n.dot(h);
 				double fres = this.fresnel(n, l, refractiveIndex);
 				
-				double microDenom = 1/(roughness*roughness*ndoth*ndoth*ndoth*ndoth);
-				double microNum = Math.exp(((ndoth*ndoth)-1)/(roughness*roughness*ndoth*ndoth));
+				double microDenom = 1.0/(roughness*roughness*ndoth*ndoth*ndoth*ndoth);
+				double microNum = Math.exp(((ndoth*ndoth)-1.0)/(roughness*roughness*ndoth*ndoth));
 				double micro = microNum*microDenom;
-				double g1 = (2*ndoth*(n.dot(v)))/(v.dot(h));
-				double g2 =  (2*ndoth*(n.dot(l)))/(v.dot(h));
-				double geo = Math.min(1,Math.min(g1,g2));
+				double g1 = (2.0*ndoth*(n.dot(v)))/(v.dot(h));
+				double g2 =  (2.0*ndoth*(n.dot(l)))/(v.dot(h));
+				double geo = Math.min(1.0,Math.min(g1,g2));
 				
-				double specCoeff = (fres*micro*geo)/(Math.PI*n.dot(v)*n.dot(l));
-				Vector3d intensity = curLight.intensity.clone().mul((Math.max(0.0,n.dot(l))) / (curLight.getRSq(record.location)));
 
-				Vector3d specularColor = this.specularColor.clone().mul(specCoeff).mul(intensity);
-				Vector3d diffuseColor = this.diffuseColor.clone().mul(intensity);
-				outIntensity.add(specularColor);
-				outIntensity.add(diffuseColor);
+				//diffuse term
+				Vector3d diffuseColor = new Vector3d(this.diffuseColor.clone().mul(Math.max(0.0,n.dot(l))));
+				//Clamp
+				Colord diffColor = new Colord(diffuseColor);
+				diffColor.clamp(0.0, 1.0);
+				
+				//specular
+				double specCoeff = (fres*micro*geo)/(Math.PI*n.dot(v)*n.dot(l));
+				Vector3d specularColor = new Vector3d(this.specularColor.clone().mul(specCoeff).mul(Math.max(0.0,n.dot(l))));
+				//Clamp
+				Colord specColor = new Colord(specularColor);
+				specColor.clamp(0.0, 1.0);
+				
+				Colord finalColor = new Colord(specColor.clone().add(diffColor));
+				Vector3d intensity = curLight.intensity.clone();
+				double lightdist = curLight.getRSq(record.location);
+				finalColor.mul(intensity).div(lightdist);
+				
+				outIntensity.set(finalColor);
 			} 
 		}
 
