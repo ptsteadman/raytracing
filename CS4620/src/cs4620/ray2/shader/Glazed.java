@@ -63,7 +63,6 @@ public class Glazed extends Shader {
 		reflection.direction.set(record.normal.clone());
 		reflection.direction.mul(2*(record.normal.dot(outgoing))).sub(outgoing.clone()).normalize();
 		reflection.makeOffsetRay();
-		//reflection.makeOffsetRay();
 		RayTracer.shadeRay(reflectedColor, scene, reflection, depth);
 		
 		// calculate substrate color
@@ -72,7 +71,6 @@ public class Glazed extends Shader {
 		substrate.shade(substrateColor, scene, ray, test, depth);
 		
 		// scale reflected and substrate colors by R and (1 - R)
-		//System.out.println(r);
 		
 		outIntensity.add(substrateColor.clone().mul(1 - r));
 		outIntensity.add(reflectedColor.clone().mul(r));

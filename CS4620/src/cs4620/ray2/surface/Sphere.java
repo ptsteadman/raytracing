@@ -100,8 +100,7 @@ public class Sphere extends Surface {
 	        outRecord.normal.set(norm.normalize());
 	        
 			outRecord.surface = this;
-			//outRecord.normal.set(outRecord.location).sub(center).normalize();
-			//NORMAL SHOULD BE CORRECT, NOT SURE IF THETA/PHI SHOULD BE COMPUTED IN OBJECT OR WORLD SPACE
+			
 			double theta = Math.asin(outRecord.normal.y);
 			double phi = Math.atan2(outRecord.normal.x, outRecord.normal.z);
 			double u = (phi + Math.PI) / (2 * Math.PI);

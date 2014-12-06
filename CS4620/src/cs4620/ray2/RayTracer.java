@@ -335,7 +335,6 @@ public class RayTracer {
 		double sInvD2 = sInv / 2;
 		double sInvSqr = sInv * sInv;
 		double exposure = scene.getExposure();
-		System.out.println(samples);
 		Camera cam = scene.getCamera();
 
 		for(int x = offsetX; x < (offsetX + sizeX); x++) {
