@@ -3,8 +3,6 @@
  -->
  
 <scene>
-<AccelStruct type="NaiveAccelStruct"
-/>
   <samples>16</samples>
   <camera type="PerspectiveCamera">
     <viewPoint>0 0 25</viewPoint>
