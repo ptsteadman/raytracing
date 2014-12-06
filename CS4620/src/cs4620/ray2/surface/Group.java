@@ -41,14 +41,10 @@ public class Group extends Surface {
 	  this.tMat.set(pMat.clone()).mulBefore(transformMat);
 	  this.tMatInv.set(pMatInv.clone().mulAfter(transformMat.clone().invert()));
 	  this.tMatTInv.set(pMatTInv.clone().mulBefore(transformMat.clone().invert().transpose()));
-	  //this.tMatInv.set(this.tMat.clone()).invert();
-	  //this.tMatTInv.set(this.tMat).invert().transpose();
-	  //computeBoundingBox();
-	  //System.out.println("tMat:" + this.tMat);
+
     // TODO#A7: Call setTransformation(tMat, tMatInv, tMatTInv) on each of the children.
 	  for (Surface s : objs){
-
-		  s.setTransformation(this.tMat.clone(), this.tMatInv.clone(), this.tMatTInv.clone());
+		  s.setTransformation(this.tMat, this.tMatInv, this.tMatTInv);
 	  }
 	
   }

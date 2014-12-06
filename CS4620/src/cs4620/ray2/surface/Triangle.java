@@ -67,7 +67,6 @@ public class Triangle extends Surface {
 	  	//transform the resulting intersection point and normal to world space
 
 		Ray ray = untransformRay(rayIn);		
-		//System.out.println("Ray Direction: " + ray.direction);
 		
 		Vector3d v0 = owner.getPosition(index.x).clone();
 		
@@ -109,16 +108,12 @@ public class Triangle extends Surface {
 
 	        this.tMat.mulPos(locWorld);
 	        outRecord.location.set(locWorld);
-	        
-	        //this.tMatTInv.mulDir(norm);
-	        //outRecord.normal.set(norm);
-			
+
 			outRecord.surface = this;
 
 			if (norm != null) {
 				normal.set(norm);
 		        this.tMatTInv.mulDir(normal);
-		        //System.out.println("normal: " + normal);
 				outRecord.normal.set(normal);
 			} else {
 				outRecord.normal
@@ -149,7 +144,6 @@ public class Triangle extends Surface {
 		// TODO#A7: Compute the bounding box and store the result in
 		// averagePosition, minBound, and maxBound.
 
-		
 		Vector3d tv0 = owner.getPosition(index.x);
 		Vector3d tv1 = owner.getPosition(index.y);
 		Vector3d tv2 = owner.getPosition(index.z);
@@ -167,7 +161,6 @@ public class Triangle extends Surface {
 		Vector3d v7 = new Vector3d(maxPt.x,maxPt.y,minPt.z);
 		
 		Vector3d v8 = new Vector3d(maxPt);
-		//if(this.tMat != null){
 		this.tMat.mulPos(v1);
 		this.tMat.mulPos(v2);
 		this.tMat.mulPos(v3);
@@ -176,7 +169,7 @@ public class Triangle extends Surface {
 		this.tMat.mulPos(v6);
 		this.tMat.mulPos(v7);
 		this.tMat.mulPos(v8);
-		//}
+
 		Vector3d[] varray = {v1,v2,v3,v4,v5,v6,v7,v8};
 		double minx = v1.x, miny = v1.y, minz = v1.z;
 		double maxx = v1.x, maxy = v1.y, maxz = v1.z;
@@ -194,12 +187,7 @@ public class Triangle extends Surface {
 		this.maxBound = new Vector3d(maxx,maxy,maxz);
 		
 		Vector3d avg = new Vector3d(tv0.clone().add(tv1.clone().add(tv2.clone())).div(3.0));
-		//if(this.tMat != null){
-			this.averagePosition = new Vector3d().set(this.tMat.mulPos(avg.clone()));
-		//} else {
-		//	this.averagePosition = new Vector3d().set(avg);
-
-		//}
+			this.averagePosition = new Vector3d().set(this.tMat.mulPos(avg));
 		 
 		 
 	}

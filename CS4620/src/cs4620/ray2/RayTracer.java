@@ -358,14 +358,8 @@ public class RayTracer {
 				}
 				
 				sampleVec.mul(sInvSqr);
-				//cam.getRay(ray,  (double) x / width, (double) y / height);
-				//shadeRay(rayColor, scene, ray, 1);
 				rayColor.set(sampleVec);
-				pixelColor.add(rayColor);
-				
-				pixelColor.mul(exposure);
-
-				
+				pixelColor.add(rayColor).mul(exposure);
 				outImage.setPixelColor(pixelColor, x, y);
 
 			}

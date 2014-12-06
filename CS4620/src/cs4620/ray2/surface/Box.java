@@ -76,14 +76,6 @@ public class Box extends Surface {
 		
 		//worldCorner 1 and 2 
 		
-		/*
-		Vector3d wc1 = new Vector3d(minPt);
-		Vector3d wc2 = new Vector3d(maxPt);
-		this.tMat.mulPos(wc1);
-		this.tMat.mulPos(wc2);
-		
-		double minx = Math.min(world)
-		*/
 		Vector3d v1 = new Vector3d(minPt);
 		Vector3d v2 = new Vector3d(minPt.x,maxPt.y,minPt.z);
 		Vector3d v3 = new Vector3d(minPt.x,minPt.y,maxPt.z);
@@ -119,18 +111,8 @@ public class Box extends Surface {
 		this.maxBound = new Vector3d(maxx,maxy,maxz);
 		
 		
-		Vector3d avg = new Vector3d(minBound.clone().add(maxBound.clone()).div(2.0));
-		this.averagePosition = new Vector3d().set(this.tMat.mulPos(avg.clone()));
-		/*
-		Vector3d sphereDiam = maxPt.sub(minPt);
-		double radius = sphereDiam.len()/2.0;
-		Vector3d a = new Vector3d(this.averagePosition);
-		double minx = a.x - radius, miny = a.y - radius, minz = a.z - radius;
-		double maxx = a.x + radius, maxy = a.y + radius, maxz = a.z + radius;
-		
-		this.minBound.set(minx,miny,minz);
-		this.maxBound.set(maxx,maxy,maxz);
-		*/
+		Vector3d avg = new Vector3d(minBound).add(maxBound).div(2.0);
+		this.averagePosition = new Vector3d().set(this.tMat.mulPos(avg));
 	}
 
 	public boolean intersect(IntersectionRecord outRecord, Ray ray) {
